@@ -1,0 +1,47 @@
+services:
+  php_fpm:
+    build: _PHP_FPM
+    restart: always
+    volumes:
+      - ./app:/var/www/html
+      - ./_PHP_FPM/php-fpm.conf:/usr/local/etc/php-fpm.conf
+      - ./_PHP_FPM/www.conf:/usr/local/etc/php-fpm.d/www.conf
+      - ./_PHP_FPM/Logs:/var/log/php
+    links:
+      - db
+    depends_on:
+      - db
+    command: >
+      sh -c "composer install --optimize-autoloader &&
+      cp .env.example .env &&
+      php artisan key:generate &&
+      chown -R www-data:www-data storage bootstrap/cache &&
+      chmod -R 775 storage bootstrap/cache &&
+      php-fpm"
+  nginx:
+    build: _NGINX
+    restart: always
+    volumes:
+      - ./app:/var/www/html
+      - ./_NGINX/nginx.conf:/etc/nginx/nginx.conf
+      - ./_NGINX/app.vhost:/etc/nginx/conf.d/app.vhost
+      - ./_NGINX/Logs:/var/log/nginx
+    ports:
+      - "8081:8081"
+    depends_on:
+      - php_fpm
+    links:
+      - php_fpm
+  db:
+    image: mariadb:10.4
+    container_name: db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: develop
+      MYSQL_DATABASE: employee_api
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./_DATABASE/data_db:/var/lib/mysql
+volumes:
+  data_db:
