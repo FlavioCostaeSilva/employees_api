@@ -47,6 +47,4 @@ RUN curl -sL https://deb.nodesource.com/setup_20.x | bash - \
 
 WORKDIR /var/www/html
 
-RUN mkdir /home/www-data
-
 CMD ["php-fpm"]

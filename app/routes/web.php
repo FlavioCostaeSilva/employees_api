@@ -15,27 +15,3 @@ use \App\Http\Controllers\HomeController;
 */
 
 Route::get('/', [HomeController::class, 'index']);
-
-Route::get(
-    '/{text}/{estado_id}',
-    [HomeController::class, 'estado']
-)
-    ->where('text', '[A-Za-zÀ-ÿ\s+-]+')
-    ->where('estado_id', '[0-9]+');
-
-Route::get(
-    '/{text}/{estado_id}/{cidade_id}',
-    [HomeController::class, 'cidade']
-)
-    ->where('text', '[A-Za-zÀ-ÿ\s+-]+')
-    ->where('estado_id', '[0-9]+')
-    ->where('cidade_id', '[0-9]+');
-
-Route::get(
-    '/{text}/{estado_id}/{cidade_id}/{bairro_id}',
-    [HomeController::class, 'cidade']
-)
-    ->where('text', '[A-Za-zÀ-ÿ\s+-]+')
-    ->where('estado_id', '[0-9]+')
-    ->where('cidade_id', '[0-9]+')
-    ->where('bairro_id', '[0-9]+');

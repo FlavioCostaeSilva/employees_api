@@ -2,43 +2,42 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory;
+    use HasApiTokens, HasFactory, Notifiable;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
-        'id', 'estado_id', 'cidade_id', 'nome'
+        'name',
+        'email',
+        'password',
     ];
 
     /**
-     * @return Attribute
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
      */
-    protected function nome(): Attribute
-    {
-        return Attribute::make(
-            get: function ($value) {
-                return str_replace(['/'], '-', $value);
-            },
-        );
-    }
-    /**
-     * @return BelongsTo
-     */
-    public function Estado(): BelongsTo
-    {
-        return $this->belongsTo(Estado::class, 'estado_id');
-    }
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
     /**
-     * @return BelongsTo
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
      */
-    public function Cidade(): BelongsTo
-    {
-        return $this->belongsTo(Cidade::class, 'cidade_id');
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
 }
