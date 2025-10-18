@@ -1,0 +1,444 @@
+:root {
+    --primary-blue: #2563eb;
+    --hover-blue: #1d4ed8;
+}
+
+body {
+    background-color: #f8f9fa;
+    padding-top: 56px;
+}
+
+/* Navbar */
+.navbar-custom {
+    background-color: var(--primary-blue);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-custom .btn {
+    background-color: white;
+    color: var(--primary-blue);
+    border-radius: 20px;
+    padding: 8px 20px;
+    margin-left: 10px;
+    font-weight: 500;
+    border: none;
+    transition: all 0.3s;
+}
+
+@media (max-width: 576px) {
+    .navbar-custom .btn {
+        padding: 6px 12px;
+        font-size: 0.875rem;
+        margin-left: 5px;
+    }
+
+    .navbar-custom .btn i {
+        margin-right: 0;
+    }
+
+    .navbar-custom .btn span {
+        display: none;
+    }
+}
+
+@media (min-width: 992px) {
+    .btn-menu {
+        display: none;
+    }
+}
+
+.navbar-custom .btn:hover {
+    background-color: #f1f5f9;
+    transform: translateY(-2px);
+}
+
+.logo {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 56px;
+    left: -280px;
+    width: 280px;
+    height: calc(100vh - 56px);
+    background-color: white;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    transition: left 0.3s ease;
+    overflow-y: auto;
+    z-index: 100;
+    padding: 20px;
+    padding-bottom: 30px;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.sidebar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+}
+
+.sidebar.active {
+    left: 0;
+}
+
+.sidebar h5 {
+    text-align: center;
+    color: var(--primary-blue);
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.sidebar .list-group-item {
+    border: none;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 12px 15px;
+    transition: background-color 0.2s;
+}
+
+.sidebar .list-group-item:hover {
+    background-color: #f1f5f9;
+    color: var(--primary-blue);
+}
+
+/* Overlay */
+.overlay {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 56px);
+    background-color: rgba(0,0,0,0.5);
+    display: none;
+    z-index: 99;
+}
+
+.overlay.active {
+    display: block;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 0;
+    padding: 30px 15px;
+    transition: margin-left 0.3s ease;
+}
+
+@media (min-width: 992px) {
+    .sidebar {
+        left: 0;
+        z-index: 100;
+    }
+    .main-content {
+        margin-left: 280px;
+    }
+    .overlay {
+        display: none !important;
+    }
+}
+
+/* Mobile z-index for sidebar */
+@media (max-width: 991px) {
+    .sidebar {
+        z-index: 1000;
+    }
+}
+
+/* Rounded Boxes */
+.rounded-box {
+    background-color: white;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* State Pills */
+.state-pill {
+    display: inline-block;
+    background-color: var(--primary-blue);
+    color: white;
+    padding: 10px 20px;
+    margin: 8px;
+    border-radius: 25px;
+    text-decoration: none;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.state-pill:hover {
+    background-color: var(--hover-blue);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+/* Virtual Tech Section */
+.virtual-tech-img {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 10px;
+    -o-object-fit: cover;
+       object-fit: cover;
+}
+
+.btn-primary-custom {
+    background-color: var(--primary-blue);
+    border: none;
+    border-radius: 25px;
+    padding: 10px 30px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-primary-custom:hover {
+    background-color: var(--hover-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+/* Search Box */
+.search-box input {
+    border-radius: 25px;
+    padding: 12px 20px;
+    border: 2px solid #e5e7eb;
+}
+
+.search-box input:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+}
+
+.search-box button {
+    border-radius: 25px;
+    padding: 12px 30px;
+}
+
+/* Footer */
+footer {
+    background-color: #1f2937;
+    color: white;
+    padding: 30px 0;
+    margin-top: 50px;
+    position: relative;
+    z-index: 200;
+}
+
+footer a {
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
+    font-size: 1.5rem;
+    transition: color 0.3s;
+}
+
+footer a:hover {
+    color: var(--primary-blue);
+}
+
+/* City Section */
+.city-header {
+    position: relative;
+}
+
+.back-link {
+    display: inline-block;
+    color: #6b7280;
+    text-decoration: none;
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+    transition: color 0.3s;
+}
+
+.back-link:hover {
+    color: var(--primary-blue);
+}
+
+.city-title {
+    color: var(--primary-blue);
+    font-weight: 600;
+    margin: 0;
+}
+
+.tech-card {
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s;
+    height: 100%;
+}
+
+.tech-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.tech-avatar {
+    font-size: 4rem;
+    color: var(--primary-blue);
+    margin-bottom: 15px;
+}
+
+.tech-card h5 {
+    color: #1f2937;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.tech-card .small {
+    line-height: 1.5;
+}
+
+/* CTA Box for Technicians */
+.cta-box {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+.cta-title {
+    color: white;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.cta-text {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 20px;
+    opacity: 0.95;
+}
+
+.cta-benefits {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 0;
+}
+
+.cta-benefits li {
+    padding: 8px 0;
+    font-size: 1rem;
+}
+
+.cta-benefits i {
+    color: #86efac;
+}
+
+.btn-cta {
+    background-color: white;
+    color: var(--primary-blue);
+    border: none;
+    border-radius: 30px;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.btn-cta:hover {
+    background-color: #fbbf24;
+    color: #1f2937;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(251, 191, 36, 0.4);
+}
+
+@media (max-width: 767px) {
+    .cta-box {
+        text-align: center;
+    }
+
+    .cta-benefits {
+        text-align: left;
+        display: inline-block;
+    }
+}
+
+/* Cities List */
+.cities-header {
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 20px;
+}
+
+.back-link-top,
+.back-link-bottom {
+    display: inline-block;
+    color: #6b7280;
+    text-decoration: none;
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.back-link-top:hover,
+.back-link-bottom:hover {
+    color: var(--primary-blue);
+    transform: translateX(-5px);
+}
+
+.back-link-bottom {
+    margin-bottom: 0;
+    margin-top: 10px;
+    padding: 10px 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 25px;
+    transition: all 0.3s;
+}
+
+.back-link-bottom:hover {
+    background-color: #f1f5f9;
+    border-color: var(--primary-blue);
+    transform: translateX(0) translateY(-2px);
+}
+
+.state-title {
+    color: var(--primary-blue);
+    font-weight: 700;
+    margin-bottom: 10px;
+    font-size: 1.8rem;
+}
+
+.cities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.city-link {
+    display: block;
+    padding: 15px 20px;
+    background-color: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    color: #1f2937;
+    text-decoration: none;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.city-link:hover {
+    background-color: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.city-link i {
+    opacity: 0.6;
+}
+
+@media (max-width: 576px) {
+    .cities-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
