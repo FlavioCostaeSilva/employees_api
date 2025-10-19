@@ -9,8 +9,10 @@ services:
       - ./_PHP_FPM/Logs:/var/log/php
     links:
       - db
+      - redis
     depends_on:
       - db
+      - redis
     command: >
       sh -c "composer install --optimize-autoloader &&
       cp .env.example .env &&
@@ -43,5 +45,13 @@ services:
       - "3306:3306"
     volumes:
       - ./_DATABASE/data_db:/var/lib/mysql
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - ./_REDIS/data:/data
+    command: redis-server --requirepass CSRkhT4P3BWqrv5WRSkdVeezLQzD7CJe
+    read_only: false
+    ports:
+      - "6379:6379"
 volumes:
   data_db:

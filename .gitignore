@@ -2,3 +2,4 @@
 /.vscode
 /_NGINX/Logs
 /_PHP_FPM/Logs
+/_REDIS/*
