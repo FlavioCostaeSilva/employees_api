@@ -22,7 +22,7 @@ return [
         . '127.0.0.1,'
         . '127.0.0.1:8081,'
         . '::1'
-    )),
+    ) ?? ''),
     /*
     |--------------------------------------------------------------------------
     | Sanctum Guards
@@ -80,5 +80,6 @@ return [
         'encrypt_cookies' => App\Http\Middleware\EncryptCookies::class,
         'verify_csrf_token' => App\Http\Middleware\VerifyCsrfToken::class,
     ],
+    'user_model' => App\Models\Manager::class,
 
 ];
