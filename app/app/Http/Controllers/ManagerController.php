@@ -29,10 +29,10 @@ class ManagerController extends Controller
 
             $token = $manager->createToken('api-token')->plainTextToken;
 
-            return response()->json([
-                'user' => $manager,
-                'token' => $token,
-            ], 201);
+            return $this->jsonResponse(
+                data: ['user' => $manager, 'token' => $token],
+                status: Response::HTTP_CREATED
+            );
         } catch (ValidationException $exception) {
             return $this->jsonResponse(message: $exception, status: Response::HTTP_BAD_REQUEST);
         } catch (\Exception $exception) {
@@ -59,7 +59,7 @@ class ManagerController extends Controller
 
             $token = $manager->createToken('auth_token')->plainTextToken;
 
-            return response()->json([
+            return $this->jsonResponse(data: [
                 'access_token' => $token,
                 'token_type' => 'Bearer',
                 'manager' => $manager,
@@ -77,9 +77,9 @@ class ManagerController extends Controller
         try {
             $request->user()->currentAccessToken()->delete();
 
-            return response()->json([
-                'message' => 'Logout has been succeeded',
-            ], 200);
+            return $this->jsonResponse(
+                message: 'Logout has been succeeded'
+            );
         } catch (\Exception $exception) {
             Log::error($exception);
             return response()->json(['error' => 'Something went wrong'], 500);
@@ -91,17 +91,19 @@ class ManagerController extends Controller
         try {
             $manager = $request->user();
 
-            return response()->json([
-                'manager' => [
-                    'id' => $manager->id,
-                    'name' => $manager->name,
-                    'email' => $manager->email,
-                    'email_verified_at' => $manager->email_verified_at,
-                    'created_at' => $manager->created_at,
-                    'updated_at' => $manager->updated_at,
+            return $this->jsonResponse(
+                data: [
+                    'manager' => [
+                        'id' => $manager->id,
+                        'name' => $manager->name,
+                        'email' => $manager->email,
+                        'email_verified_at' => $manager->email_verified_at,
+                        'created_at' => $manager->created_at,
+                        'updated_at' => $manager->updated_at,
+                    ],
+                    'total_employees' => $manager->employees()->count(),
                 ],
-                'total_employees' => $manager->employees()->count(),
-            ], 200);
+            );
         } catch (\Exception $exception) {
             Log::error($exception);
             return response()->json(['error' => 'Something went wrong'], 500);

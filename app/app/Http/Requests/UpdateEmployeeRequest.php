@@ -36,7 +36,6 @@ class UpdateEmployeeRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                'regex:/^[a-zA-ZÀ-ÿ\s]+$/',
             ],
             'email' => [
                 'sometimes',

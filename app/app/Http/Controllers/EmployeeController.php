@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,6 +14,29 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EmployeeController extends Controller
 {
+    public function index(Request $request): JsonResponse
+    {
+        try {
+            /** @var Collection $employees */
+            $employees = $request->user()
+                ->employees()
+                ->get();
+
+            $data = new \stdClass();
+            $data->count = $employees->count();
+            $data->registers = $employees->toArray();
+
+            return $this->jsonResponse(data: $data);
+        } catch (ValidationException $exception) {
+            return $this->jsonResponse(message: $exception, status: Response::HTTP_BAD_REQUEST);
+        } catch (ModelNotFoundException $exception) {
+            return $this->jsonResponse(message: $exception, status: Response::HTTP_NOT_FOUND);
+        } catch (\Exception $exception) {
+            Log::error($exception);
+            return response()->json(['error' => 'Something went wrong'], 500);
+        }
+    }
+
     public function store(StoreEmployeeRequest $request): JsonResponse
     {
         try {
@@ -20,10 +44,13 @@ class EmployeeController extends Controller
 
             $employee = $request->user()->employees()->create($validated);
 
-            return response()->json([
-                'message' => 'Employee created with success',
-                'employee' => $employee,
-            ], 201);
+            return $this->jsonResponse(
+                data: [
+                    'employee' => $employee,
+                ],
+                message: 'Employee created with success',
+                status: Response::HTTP_CREATED
+            );
         } catch (ValidationException $exception) {
             return $this->jsonResponse(message: $exception, status: Response::HTTP_BAD_REQUEST);
         } catch (\Exception $exception) {
@@ -36,7 +63,10 @@ class EmployeeController extends Controller
         try {
             $employee = $request->user()->employees()->findOrFail($id);
 
-            return response()->json($employee);
+            return $this->jsonResponse(
+                data: $employee,
+                status: Response::HTTP_CREATED
+            );
         } catch (ValidationException $exception) {
             return $this->jsonResponse(message: $exception, status: Response::HTTP_BAD_REQUEST);
         } catch (ModelNotFoundException $exception) {
@@ -56,10 +86,12 @@ class EmployeeController extends Controller
 
             $employee->update($validated);
 
-            return response()->json([
-                'message' => 'Employee updated with success',
-                'employee' => $employee->fresh(),
-            ]);
+            return $this->jsonResponse(
+                data: [
+                    'employee' => $employee->fresh(),
+                ],
+                message: 'Employee updated with success',
+            );
         } catch (ValidationException $exception) {
             return $this->jsonResponse(message: $exception, status: Response::HTTP_BAD_REQUEST);
         } catch (ModelNotFoundException $exception) {
@@ -78,9 +110,9 @@ class EmployeeController extends Controller
             $employeeName = $employee->name;
             $employee->delete();
 
-            return response()->json([
-                'message' => "Employee {$employeeName} deleted with success",
-            ]);
+            return $this->jsonResponse(
+                message: "Employee {$employeeName} deleted with success",
+            );
         } catch (ValidationException $exception) {
             return $this->jsonResponse(message: $exception, status: Response::HTTP_BAD_REQUEST);
         } catch (ModelNotFoundException $exception) {

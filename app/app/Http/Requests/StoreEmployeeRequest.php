@@ -34,7 +34,6 @@ class StoreEmployeeRequest extends FormRequest
                 'string',
                 'max:255',
                 'min:3',
-                'regex:/^[a-zA-ZÀ-ÿ\s]+$/',
             ],
             'email' => [
                 'required',
