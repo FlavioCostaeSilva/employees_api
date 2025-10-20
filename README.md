@@ -19,4 +19,37 @@ This is a job test, build with PHP (v8.3) and Laravel
 12. Run command to adjust correct permissions: **chmod -R 775 storage bootstrap/cache**
 13. Run command "**php artisan key:generate**", to gen a Laravel unique key
 14. Run command "**php artisan migrate**", to run database migrations
-15. Go to URL [localhost:8081](http://localhost:8081)
+15. Add Manager seeds with "**php artisan db:seed --class=ManagerSeeder**"
+16. Add Employee seeds with "**php artisan db:seed --class=EmployeeSeeder**"
+17. Create the test database **test_employee_api**
+18. Go to URL [localhost:8081](http://localhost:8081)
+
+### API Documentation
+
+See here: https://documenter.getpostman.com/view/3303999/2sB3QQKoWD
+
+### How to run tests
+
+``
+php artisan test
+``
+
+### How to check code coverage
+``
+php artisan test --coverage --coverage-html coverage-report
+``
+
+### How to activate Queue
+``
+php artisan queue:work redis --verbose
+``
+
+### Troubleshot
+Try it first:
+
+``
+php artisan config:clear
+php artisan cache:clear
+composer dump-autoload
+``
+
