@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EmployeeUploadCSVController;
 use App\Http\Controllers\ManagerController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +21,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [ManagerController::class, 'logout']);
     Route::get('/me', [ManagerController::class, 'me']);
 
-    Route::apiResource('employees', EmployeeController::class);
+    Route::apiResource('/employees', EmployeeController::class);
+    Route::post('/employees/upload-csv', [EmployeeUploadCSVController::class, 'uploadCsv']);
 });
 
 Route::post('/login', [ManagerController::class, 'login']);
