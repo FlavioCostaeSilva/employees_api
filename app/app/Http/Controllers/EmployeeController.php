@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,10 +17,15 @@ class EmployeeController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            /** @var Collection $employees */
-            $employees = $request->user()
-                ->employees()
-                ->get();
+            $managerId = $request->user()->id;
+            $cacheKey = "manager:{$managerId}:employees";
+            $cacheTTL = 3600;
+
+            $employees = Cache::remember($cacheKey, $cacheTTL, function () use ($request) {
+                return $request->user()
+                    ->employees()
+                    ->get();
+            });
 
             $data = new \stdClass();
             $data->count = $employees->count();
@@ -43,6 +48,9 @@ class EmployeeController extends Controller
             $validated = $request->validated();
 
             $employee = $request->user()->employees()->create($validated);
+
+            $managerId = $request->user()->id;
+            Cache::forget("manager:{$managerId}:employees");
 
             return $this->jsonResponse(
                 data: [
@@ -85,6 +93,9 @@ class EmployeeController extends Controller
 
             $employee->update($validated);
 
+            $managerId = $request->user()->id;
+            Cache::forget("manager:{$managerId}:employees");
+
             return $this->jsonResponse(
                 data: [
                     'employee' => $employee->fresh(),
@@ -108,6 +119,9 @@ class EmployeeController extends Controller
 
             $employeeName = $employee->name;
             $employee->delete();
+
+            $managerId = $request->user()->id;
+            Cache::forget("manager:{$managerId}:employees");
 
             return $this->jsonResponse(
                 message: "Employee {$employeeName} deleted with success",
