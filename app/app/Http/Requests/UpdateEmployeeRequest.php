@@ -3,8 +3,11 @@
 namespace App\Http\Requests;
 
 use App\Rules\CpfValidation;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\Response;
 
 class UpdateEmployeeRequest extends FormRequest
 {
@@ -84,5 +87,21 @@ class UpdateEmployeeRequest extends FormRequest
                 'state' => strtoupper($this->state),
             ]);
         }
+
+        if ($this->has('cpf')) {
+            $this->merge([
+                'cpf' => preg_replace('/\D/', '', $this->cpf),
+            ]);
+        }
+    }
+
+    public function failedValidation(Validator $validator): Response
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422)
+        );
     }
 }

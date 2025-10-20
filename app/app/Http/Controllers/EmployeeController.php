@@ -18,8 +18,6 @@ class EmployeeController extends Controller
         try {
             $validated = $request->validated();
 
-            $validated['cpf'] = preg_replace('/\D/', '', $validated['cpf']);
-
             $employee = $request->user()->employees()->create($validated);
 
             return response()->json([
