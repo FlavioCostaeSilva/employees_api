@@ -64,8 +64,7 @@ class EmployeeController extends Controller
             $employee = $request->user()->employees()->findOrFail($id);
 
             return $this->jsonResponse(
-                data: $employee,
-                status: Response::HTTP_CREATED
+                data: $employee
             );
         } catch (ValidationException $exception) {
             return $this->jsonResponse(message: $exception, status: Response::HTTP_BAD_REQUEST);
