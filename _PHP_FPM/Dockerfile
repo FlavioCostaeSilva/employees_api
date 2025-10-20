@@ -29,7 +29,8 @@ RUN apt-get update -y \
 
 # XDebug
 RUN pecl install xdebug \
-    && docker-php-ext-enable xdebug
+    && docker-php-ext-enable xdebug \
+    && echo "xdebug.mode = coverage" > /usr/local/etc/php/conf.d/xdebug_mode.ini
 
 # Redis install
 RUN pecl install -o -f redis \

@@ -16,6 +16,25 @@
         <include>
             <directory suffix=".php">./app</directory>
         </include>
+        <exclude>
+            <directory>./app/Console</directory>
+            <directory>./app/Exceptions</directory>
+            <file>./app/Http/Middleware/Authenticate.php</file>
+            <file>./app/View/Components/AppLayout.php</file>
+            <file>./app/View/Components/GuestLayout.php</file>
+            <file>./app/Providers/RouteServiceProvider.php</file>
+            <file>./app/Providers/AuthServiceProvider.php</file>
+            <file>./app/Providers/BroadcastServiceProvider.php</file>
+            <file>./app/Providers/EventServiceProvider.php</file>
+            <file>./app/Providers/AppServiceProvider.php</file>
+            <file>./app/Http/Middleware/RedirectIfAuthenticated/AppServiceProvider.php</file>
+            <file>./app/Http/Middleware/TrustHosts.php</file>
+            <file>./app/Http/Middleware/RedirectIfAuthenticated.php</file>
+        </exclude>
+        <report>
+            <html outputDirectory="coverage-report"/>
+            <text outputFile="php://stdout" showOnlySummary="true"/>
+        </report>
     </coverage>
     <php>
         <env name="APP_ENV" value="testing"/>
