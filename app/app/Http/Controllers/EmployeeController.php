@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -32,10 +33,6 @@ class EmployeeController extends Controller
             $data->registers = $employees->toArray();
 
             return $this->jsonResponse(data: $data);
-        } catch (ValidationException $exception) {
-            return $this->jsonResponse(message: $exception, status: Response::HTTP_BAD_REQUEST);
-        } catch (ModelNotFoundException $exception) {
-            return $this->jsonResponse(message: $exception, status: Response::HTTP_NOT_FOUND);
         } catch (\Exception $exception) {
             Log::error($exception);
             return response()->json(['error' => 'Something went wrong'], 500);
@@ -69,6 +66,10 @@ class EmployeeController extends Controller
     public function show(Request $request, $id): JsonResponse
     {
         try {
+            Validator::make(['id' => $id], [
+                'id' => 'required|numeric',
+            ])->validate();
+
             $employee = $request->user()->employees()->findOrFail($id);
 
             return $this->jsonResponse(
@@ -115,6 +116,10 @@ class EmployeeController extends Controller
     public function destroy(Request $request, $id): JsonResponse
     {
         try {
+            Validator::make(['id' => $id], [
+                'id' => 'required|numeric',
+            ])->validate();
+
             $employee = $request->user()->employees()->findOrFail($id);
 
             $employeeName = $employee->name;

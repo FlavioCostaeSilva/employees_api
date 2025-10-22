@@ -7,6 +7,7 @@ use App\Models\Manager;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
 class EmployeeControllerTest extends TestCase
@@ -298,5 +299,43 @@ class EmployeeControllerTest extends TestCase
 
         // Assert
         $response->assertStatus(404);
+    }
+
+    /** @test */
+    public function when_delete_an_employee_id_must_be_numeric()
+    {
+        // Arrange
+        Employee::factory()->create([
+            'manager_id' => $this->manager->id,
+            'name' => 'John Doe'
+        ]);
+
+        // Act
+        $response = $this->actingAs($this->manager)
+            ->deleteJson("/api/employees/INVALID_NOT_NUMERIC_ID");
+
+        // Assert
+        $response->assertStatus(400)
+            ->assertJsonStructure(['message'])
+            ->assertJsonPath('message', 'The id must be a number.');
+    }
+
+    /** @test */
+    public function when_show_an_employee_id_must_be_numeric()
+    {
+        // Arrange
+        Employee::factory()->create([
+            'manager_id' => $this->manager->id,
+            'name' => 'John Doe'
+        ]);
+
+        // Act
+        $response = $this->actingAs($this->manager)
+            ->deleteJson("/api/employees/INVALID_NOT_NUMERIC_ID");
+
+        // Assert
+        $response->assertStatus(400)
+            ->assertJsonStructure(['message'])
+            ->assertJsonPath('message', 'The id must be a number.');
     }
 }
