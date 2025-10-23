@@ -3,16 +3,36 @@
 namespace Tests\Feature\Jobs;
 
 use App\Jobs\ProcessEmployeeCsv;
+use App\Mail\EmployeeCsvProcessedSuccess;
 use App\Models\Employee;
 use App\Models\Manager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class ProcessEmployeeCsvTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Mail::fake();
+
+        $this->testFilePath = storage_path('app/test_employees.csv');
+    }
+
+    protected function tearDown(): void
+    {
+        if (file_exists($this->testFilePath)) {
+            unlink($this->testFilePath);
+        }
+
+        parent::tearDown();
+    }
 
     /** @test */
     public function it_validates_csv_file_is_required()
@@ -165,5 +185,24 @@ class ProcessEmployeeCsvTest extends TestCase
             'email' => 'joao@test.com',
             'cpf' => '12345678909'
         ]);
+    }
+
+    /** @test */
+    public function it_sends_success_email_after_processing_valid_csv()
+    {
+        $csvContent = "name,email,cpf,city,state\n";
+        $csvContent .= "João Silva,joao@example.com,37204103076,São Paulo,SP\n";
+        $csvContent .= "Maria Santos,maria@example.com,07652144078,Rio de Janeiro,RJ\n";
+
+        file_put_contents($this->testFilePath, $csvContent);
+
+        $manager = Manager::factory()->create([
+            'email' => 'manager@example.com'
+        ]);
+
+        $job = new ProcessEmployeeCsv($manager, $this->testFilePath, 'test-job-123');
+        $job->handle();
+
+        Mail::assertSent(EmployeeCsvProcessedSuccess::class, 1);
     }
 }

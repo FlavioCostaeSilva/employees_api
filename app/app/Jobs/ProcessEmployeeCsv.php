@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Helpers\BrazilianStates;
 use App\Http\Requests\StoreEmployeeRequest;
+use App\Mail\EmployeeCsvProcessedSuccess;
 use App\Models\Employee;
 use App\Models\Manager;
 use Illuminate\Bus\Queueable;
@@ -12,6 +13,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use League\Csv\Reader;
 use League\Csv\Statement;
@@ -151,6 +153,7 @@ class ProcessEmployeeCsv implements ShouldQueue
                 'result' => $result
             ]);
 
+            $this->sendSuccessEmail($result);
         } catch (\Exception $e) {
             Log::error("Error processing CSV file", [
                 'manager_id' => $this->manager->id,
@@ -171,5 +174,23 @@ class ProcessEmployeeCsv implements ShouldQueue
         $messages = $request->messages();
 
         return Validator::make($data, $rules, $messages);
+    }
+
+    private function sendSuccessEmail(array $result): void
+    {
+        try {
+            Mail::to($this->manager->email)
+                ->send(new EmployeeCsvProcessedSuccess($this->manager, $result));
+
+            Log::info("Success email sent", [
+                'manager_id' => $this->manager->id,
+                'manager_email' => $this->manager->email
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Failed to send success email", [
+                'manager_id' => $this->manager->id,
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 }
