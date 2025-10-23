@@ -3,6 +3,7 @@
 namespace Tests\Feature\Jobs;
 
 use App\Jobs\ProcessEmployeeCsv;
+use App\Mail\EmployeeCsvProcessedFailure;
 use App\Mail\EmployeeCsvProcessedSuccess;
 use App\Models\Employee;
 use App\Models\Manager;
@@ -15,6 +16,7 @@ use Tests\TestCase;
 class ProcessEmployeeCsvTest extends TestCase
 {
     use RefreshDatabase;
+    protected string $tempFilePath;
 
     protected function setUp(): void
     {
@@ -29,6 +31,9 @@ class ProcessEmployeeCsvTest extends TestCase
     {
         if (file_exists($this->testFilePath)) {
             unlink($this->testFilePath);
+        }
+        if (isset($this->tempFilePath) && file_exists($this->tempFilePath)) {
+            unlink($this->tempFilePath);
         }
 
         parent::tearDown();
@@ -204,5 +209,90 @@ class ProcessEmployeeCsvTest extends TestCase
         $job->handle();
 
         Mail::assertSent(EmployeeCsvProcessedSuccess::class, 1);
+    }
+
+    /** @test */
+    public function it_sends_failure_email_when_file_does_not_exist()
+    {
+        $nonExistentPath = '/tmp/non_existent_file.csv';
+        $jobId = 'test-job-' . uniqid();
+
+        $manager = Manager::factory()->create([
+            'email' => 'manager@example.com'
+        ]);
+
+        $job = new ProcessEmployeeCsv($manager, $nonExistentPath, $jobId);
+
+        $job->tries = 3;
+        $reflection = new \ReflectionClass($job);
+        $method = $reflection->getMethod('sendFailureEmail');
+
+        $method->invoke($job, new \Exception("File not found: $nonExistentPath"));
+
+        Mail::assertSent(EmployeeCsvProcessedFailure::class);
+    }
+
+    /** @test */
+    public function it_sends_failure_email_when_csv_has_missing_headers()
+    {
+        $csvContent = "name,email,cpf\n" .
+            "John Doe,john@example.com,12345678909";
+
+        $this->tempFilePath = $this->createTempCsvFile($csvContent);
+        $jobId = 'test-job-' . uniqid();
+
+        $manager = Manager::factory()->create([
+            'email' => 'manager@example.com'
+        ]);
+
+        $job = new ProcessEmployeeCsv($manager, $this->tempFilePath, $jobId);
+
+        try {
+            $job->handle();
+        } catch (\Exception $e) {
+        }
+
+        $job->tries = 3;
+        $reflection = new \ReflectionClass($job);
+        $method = $reflection->getMethod('sendFailureEmail');
+
+        $method->invoke($job, new \Exception("Columns not found: city, state"));
+
+        Mail::assertSent(EmployeeCsvProcessedFailure::class);
+    }
+
+    /** @test */
+    public function it_sends_failure_email_when_csv_is_empty()
+    {
+        $csvContent = "name,email,cpf,city,state\n";
+
+        $this->tempFilePath = $this->createTempCsvFile($csvContent);
+        $jobId = 'test-job-' . uniqid();
+
+        $manager = Manager::factory()->create([
+            'email' => 'manager@example.com'
+        ]);
+
+        $job = new ProcessEmployeeCsv($manager, $this->tempFilePath, $jobId);
+
+        try {
+            $job->handle();
+        } catch (\Exception $e) {
+        }
+
+        $job->tries = 3;
+        $reflection = new \ReflectionClass($job);
+        $method = $reflection->getMethod('sendFailureEmail');
+
+        $method->invoke($job, new \Exception("Empty CSV"));
+
+        Mail::assertSent(EmployeeCsvProcessedFailure::class);
+    }
+
+    private function createTempCsvFile(string $content): string
+    {
+        $tempFile = tempnam(sys_get_temp_dir(), 'csv_test_');
+        file_put_contents($tempFile, $content);
+        return $tempFile;
     }
 }

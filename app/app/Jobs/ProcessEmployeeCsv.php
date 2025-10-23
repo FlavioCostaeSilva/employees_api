@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Helpers\BrazilianStates;
 use App\Http\Requests\StoreEmployeeRequest;
+use App\Mail\EmployeeCsvProcessedFailure;
 use App\Mail\EmployeeCsvProcessedSuccess;
 use App\Models\Employee;
 use App\Models\Manager;
@@ -55,7 +56,7 @@ class ProcessEmployeeCsv implements ShouldQueue
 
         try {
             if (!file_exists($this->filePath)) {
-                throw new \Exception("Arquivo não encontrado: {$this->filePath}");
+                throw new \Exception("File not found: $this->filePath");
             }
 
             $csv = Reader::createFromPath($this->filePath, 'r');
@@ -162,6 +163,10 @@ class ProcessEmployeeCsv implements ShouldQueue
                 'trace' => $e->getTraceAsString()
             ]);
 
+            if ($this->tries === $this->attempts()) {
+                $this->sendFailureEmail($e);
+            }
+
             throw $e;
         }
     }
@@ -188,6 +193,28 @@ class ProcessEmployeeCsv implements ShouldQueue
             ]);
         } catch (\Exception $e) {
             Log::error("Failed to send success email", [
+                'manager_id' => $this->manager->id,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    private function sendFailureEmail(\Exception $exception): void
+    {
+        try {
+            Mail::to($this->manager->email)
+                ->send(new EmployeeCsvProcessedFailure(
+                    $this->manager,
+                    $exception->getMessage(),
+                    $exception->getTraceAsString()
+                ));
+
+            Log::info("Failure email sent", [
+                'manager_id' => $this->manager->id,
+                'manager_email' => $this->manager->email
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Failed to send failure email", [
                 'manager_id' => $this->manager->id,
                 'error' => $e->getMessage()
             ]);
